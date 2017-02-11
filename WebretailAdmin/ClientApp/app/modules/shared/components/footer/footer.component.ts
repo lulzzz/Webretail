@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 
 @Component({
     selector: 'customfooter',
-    templateUrl: 'customfooter.component.html'
+    templateUrl: 'footer.component.html'
 })
 
-export class CustomFooterComponent {
+export class FooterComponent {
     public currentYear: number = new Date().getFullYear();
 }

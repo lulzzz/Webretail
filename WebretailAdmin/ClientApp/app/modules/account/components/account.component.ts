@@ -35,7 +35,7 @@ export class AccountComponent implements OnInit {
         this.accountService.getAll().subscribe(result => {
             this.accounts = result;
             this.totalRecords = this.accounts.length;
-        });
+        }, onerror => alert('ERROR\r\n' + onerror));
     }
 
     get isNew() : boolean { return this.selected == null || this.selected.accountId == 0; }

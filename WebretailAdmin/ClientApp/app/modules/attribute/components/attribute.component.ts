@@ -41,7 +41,7 @@ export class AttributeComponent implements OnInit {
         this.attributeService.getAll().subscribe(result => {
             this.attributes = result;
             this.totalRecords = this.attributes.length;
-        });
+        }, onerror => alert('ERROR\r\n' + onerror));
     }
 
     get isNew() : boolean { return this.selected == null || this.selected.attributeId == 0; }

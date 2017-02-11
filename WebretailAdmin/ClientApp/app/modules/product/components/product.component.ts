@@ -4,6 +4,7 @@ import { TreeNode, Message, MenuItem } from 'primeng/primeng';
 import { Observable } from 'rxjs/Rx';
 import { AuthenticationService } from './../../../services/authentication.service';
 import { Product, Article, ArticleAttributeValue, AttributeValue } from './../../../shared/models';
+import { FooterComponent } from './../../shared/components/footer/footer.component';
 import { Helpers } from './../../../shared/helpers';
 import { ProductService } from './../../../services/product.service';
 import { CategoryService } from './../../../services/category.service';
@@ -47,7 +48,7 @@ export class ProductComponent implements OnInit {
                 this.product = result;
                 this.createTree();
                 this.createSheet();
-            });
+            }, onerror => alert('ERROR: ' + onerror));
         });
 
         this.buttons = [
@@ -132,7 +133,6 @@ export class ProductComponent implements OnInit {
             obs.forEach(e => {
                 //TODO: get stock for this barcode
                 let qta = 1;
-                console.log('Obs: ' + e.barcode);
                 if (isFirst) {
                     e.attributeValues.forEach(ex => {
                         console.log('Obs: ' + ex.attributeValue.attributeValueName);
@@ -151,14 +151,13 @@ export class ProductComponent implements OnInit {
     }
 
     saveClick() {
-        this.msgs = [];
-        this.msgs.push({severity: 'info', summary: 'Success', detail: 'Data Saved'});
+        this.msgs.push({severity: 'success', summary: 'Success', detail: 'Data saved'});
         this.display = false;
     }
 
     addClick() {
         if (!this.selectedNode) {
-            this.msgs.push({severity: 'info', summary: 'Information', detail: 'A node must be selected before adding'});
+            this.msgs.push({severity: 'warn', summary: 'Warning', detail: 'A node must be selected before adding'});
             return;
         }
 
@@ -187,7 +186,7 @@ export class ProductComponent implements OnInit {
                 this.list2 = this.productInfo[0].children.find(p => p.type == 'attributes').children.find(p => p.data == this.selectedNode.data).children;
                 break;
             default:
-                this.msgs.push({severity: 'info', summary: 'Information', detail: 'You can not add anything to this node'});
+                this.msgs.push({severity: 'warn', summary: 'warning', detail: 'You can not add anything to this node'});
                 return;
         }
 

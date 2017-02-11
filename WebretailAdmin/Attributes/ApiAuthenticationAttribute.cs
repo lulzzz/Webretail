@@ -11,14 +11,10 @@ namespace Webretail.Admin.Attributes
 {
     public class ApiAuthenticationAttribute : AuthorizeAttribute, IAuthorizationFilter
     {
-        //private ISessionRepository repository;
         IMemoryCache memoryCache;
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            //if (repository == null)
-            //    repository = (ISessionRepository)context.HttpContext.RequestServices.GetService(typeof(ISessionRepository));
-
             StringValues token;
             if (context.HttpContext.Request.Headers.TryGetValue("token", out token))
             {

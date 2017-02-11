@@ -12,11 +12,11 @@ export class ProductService {
     }
 
     getProducts() : Observable<Product[]> {
-        return this.http.get('api/product').map(result => <Product[]>result.json());
+        return this.http.get('api/product', { headers: Helpers.getHeaders() }).map(result => <Product[]>result.json());
     }
 
     getProduct(id: number) : Observable<Product> {
-        return this.http.get('/api/product/' + id).map(result => <Product>result.json());
+        return this.http.get('/api/product/' + id, { headers: Helpers.getHeaders() }).map(result => <Product>result.json());
     }
 
     create(model: Product) : Observable<Product> {

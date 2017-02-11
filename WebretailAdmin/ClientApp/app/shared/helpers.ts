@@ -1,5 +1,6 @@
 import { Headers } from '@angular/http';
 import { SelectItem, TreeNode } from 'primeng/primeng';
+import { Token } from '../shared/models';
 
 export class Helpers {
 
@@ -21,7 +22,11 @@ export class Helpers {
     static getHeaders() : Headers {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
-        headers.append('token', localStorage.getItem('token'));
+
+        let tokenModel = <Token>JSON.parse(localStorage.getItem('token'));
+        if (tokenModel) {
+            headers.append('token', tokenModel.token);
+        }
         return headers;
     }
 

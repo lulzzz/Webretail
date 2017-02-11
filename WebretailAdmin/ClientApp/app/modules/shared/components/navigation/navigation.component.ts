@@ -8,5 +8,6 @@ import { AuthenticationService } from './../../../../services/authentication.ser
 })
 
 export class NavigationComponent {
-	constructor(public authenticationService: AuthenticationService) {}
+	constructor(public authenticationService: AuthenticationService) {
+    }
 }

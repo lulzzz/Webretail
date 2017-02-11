@@ -31,7 +31,7 @@ export class BrandComponent implements OnInit {
         this.brandService.getAll().subscribe(result => {
             this.brands = result;
             this.totalRecords = this.brands.length;
-        });
+        }, onerror => alert('ERROR\r\n' + onerror));
     }
 
     get isNew() : boolean { return this.selected == null || this.selected.brandId == 0; }

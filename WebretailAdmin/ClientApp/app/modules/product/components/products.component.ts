@@ -48,7 +48,7 @@ export class ProductsComponent implements OnInit {
             this.products = result;
             this.totalRecords = this.products.length;
             this.buildFilter(result);
-        });
+        }, onerror => alert('ERROR\r\n' + onerror));
 
         this.brandService.getAll().subscribe(result => {
             this.allbrands = result.map(p => Helpers.newSelectItem(p, p.brandName));

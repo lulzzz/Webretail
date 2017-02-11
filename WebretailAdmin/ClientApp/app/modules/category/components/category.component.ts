@@ -32,7 +32,7 @@ export class CategoryComponent implements OnInit {
         this.categoryService.getAll().subscribe(result => {
             this.categories = result;
             this.totalRecords = this.categories.length;
-        });
+        }, onerror => alert('ERROR\r\n' + onerror));
     }
 
     get isNew() : boolean { return this.selected == null || this.selected.categoryId == 0; }

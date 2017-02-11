@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:1.1.0-sdk-msbuild
+FROM microsoft/dotnet:1.1.0-sdk-msbuild-rc3
 WORKDIR /app
 
 EXPOSE 5000 5001

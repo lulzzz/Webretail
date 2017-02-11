@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Webretail.Admin.Attributes;
 using Webretail.Admin.Models;
 using Webretail.Admin.Repositories;
 
 namespace Webretail.Admin.Controllers
 {
     [Route("api/[controller]")]
-    public class CategoryController : Controller
+    [ApiAuthentication(Roles = "User")]
+	public class CategoryController : Controller
     {
         readonly ICategoryRepository repository;
 

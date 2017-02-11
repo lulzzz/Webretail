@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Webretail.Admin.Models;
 using Webretail.Admin.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Webretail.Admin.Attributes;
 
 namespace WebretailAdmin
 {
@@ -29,7 +30,7 @@ namespace WebretailAdmin
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options =>
+			services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigins",
                     builder =>
@@ -42,7 +43,12 @@ namespace WebretailAdmin
             });
 
             // Add framework services.
-            services.AddDbContext<WebretailContext>(options =>
+			// Adds a default in-memory implementation of IDistributedCache, which is very fast but 
+			// the cache will not be shared between instances of the application. 
+			// Also adds IMemoryCache.
+			services.AddMemoryCache();
+
+			services.AddDbContext<WebretailContext>(options =>
 			  options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
 
 			services.AddScoped<IAccountRepository, AccountRepository>();
@@ -52,8 +58,11 @@ namespace WebretailAdmin
 			services.AddScoped<IAttributeRepository, AttributeRepository>();
 			services.AddScoped<IProductRepository, ProductRepository>();
 
-         	services.AddMvc();
-   			
+ 			services.AddMvc()
+			   .AddMvcOptions(
+				   options => options.Filters.Add(new ApiExceptionFilterAttribute())
+			   );
+
 			var sp = services.BuildServiceProvider();
 			var db = sp.GetService<WebretailContext>();
 			db.CreateTablesIfNotExists();

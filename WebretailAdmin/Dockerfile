@@ -9,11 +9,15 @@ RUN apt-get -qq update
 RUN apt-get install -y nodejs
 RUN update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
 
-#COPY WebretailService.csproj .
-#ADD package.json .
+#ADD WebretailAdmin.csproj .
 COPY . .
+
+RUN npm install
+RUN npm run build-production
+RUN rm -rf aot
+RUN rm -rf node_modules
 
 RUN dotnet restore
 RUN dotnet publish -c Release -o out
-RUN rm -rf node_modules
+
 ENTRYPOINT ["dotnet", "out/WebretailService.dll"]

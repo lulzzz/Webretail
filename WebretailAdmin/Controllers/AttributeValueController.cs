@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Webretail.Admin.Attributes;
 using Webretail.Admin.Models;
 using Webretail.Admin.Repositories;
 
 namespace Webretail.Admin.Controllers
 {
     [Route("api/[controller]")]
+	[ApiAuthentication(Roles = "User")]
     public class AttributeValueController : Controller
     {
         readonly IAttributeRepository repository;

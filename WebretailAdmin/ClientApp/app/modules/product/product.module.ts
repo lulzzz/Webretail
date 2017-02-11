@@ -5,7 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
     DataTableModule, SharedModule, PaginatorModule, TreeModule, ButtonModule, GrowlModule,
     DropdownModule, SliderModule, MultiSelectModule, InputTextModule, InputSwitchModule,
-    PanelModule, SplitButtonModule, DialogModule
+    PanelModule, SplitButtonModule, DialogModule, PickListModule
 } from 'primeng/primeng';
 
 import { ProductRoutes } from './product.routes';
@@ -13,7 +13,6 @@ import { ProductsComponent } from './components/products.component';
 import { ProductComponent } from './components/product.component';
 import { PriceFilterPipe } from './../../pipes/price-filter.pipe';
 import { ProductService } from './../../services/product.service';
-import { BrandService } from './../../services/brand.service';
 
 
 @NgModule({
@@ -21,7 +20,7 @@ import { BrandService } from './../../services/brand.service';
         FormsModule, ReactiveFormsModule,
         DataTableModule, SharedModule, PaginatorModule, TreeModule, ButtonModule, GrowlModule,
         DropdownModule, SliderModule, MultiSelectModule, InputTextModule, InputSwitchModule,
-        PanelModule, SplitButtonModule, DialogModule,
+        PanelModule, SplitButtonModule, DialogModule, PickListModule,
         CommonModule,
         ProductRoutes
     ],
@@ -31,7 +30,7 @@ import { BrandService } from './../../services/brand.service';
         ProductComponent
     ],
     providers: [
-        ProductService, BrandService
+        ProductService
     ]
 })
 

@@ -1,5 +1,5 @@
 import { Headers } from '@angular/http';
-import { SelectItem } from 'primeng/primeng';
+import { SelectItem, TreeNode } from 'primeng/primeng';
 
 export class Helpers {
 
@@ -27,6 +27,15 @@ export class Helpers {
 
     static newSelectItem(value: any, label?: string) : SelectItem {
         return <SelectItem>{ label: label ? label : value, value: value };
+    }
+
+    static newNode(label: string, data: string, type: string) : TreeNode {
+        return <TreeNode>{
+                'label': label,
+                'data': data,
+                'type': type,
+                'children': []
+        };
     }
 
     static getUnitOfMeasure() : SelectItem[] {

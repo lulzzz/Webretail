@@ -3,20 +3,23 @@ import { ActivatedRoute } from '@angular/router';
 import { TreeNode, Message, MenuItem } from 'primeng/primeng';
 import { Observable } from 'rxjs/Rx';
 import { AuthenticationService } from './../../../services/authentication.service';
-import { ProductService } from './../../../services/product.service';
 import { Product, Article, ArticleAttributeValue, AttributeValue } from './../../../shared/models';
 import { Helpers } from './../../../shared/helpers';
+import { ProductService } from './../../../services/product.service';
+import { CategoryService } from './../../../services/category.service';
+import { AttributeService } from './../../../services/attribute.service';
 
 @Component({
     selector: 'product',
-    templateUrl: 'product.component.html'
+    templateUrl: 'product.component.html',
+    providers: [ CategoryService, AttributeService ]
 })
 
 export class ProductComponent implements OnInit {
 
     private sub: any;
     msgs: Message[] = [];
-    items: MenuItem[];
+    buttons: MenuItem[];
     product: Product;
     header: string[];
     articles: any[];
@@ -24,10 +27,15 @@ export class ProductComponent implements OnInit {
     selected: any;
     productInfo: TreeNode[];
     selectedNode: TreeNode;
+    list1: any[];
+    list2: any[];
+    display: boolean;
 
 	constructor(private authenticationService: AuthenticationService,
                 private activatedRoute: ActivatedRoute,
-                private productService: ProductService) {}
+                private productService: ProductService,
+                private categoryService: CategoryService,
+                private attributeService: AttributeService) {}
 
     ngOnInit() {
         this.authenticationService.checkCredentials();
@@ -42,12 +50,9 @@ export class ProductComponent implements OnInit {
             });
         });
 
-        this.items = [
-            {label: 'Remove', icon: 'fa-trash', command: () => {
-                this.delete();
-            }},
+        this.buttons = [
             {label: 'Build Articles', icon: 'fa-database', command: () => {
-                this.save();
+                this.saveClick();
             }}
         ];
     }
@@ -57,37 +62,28 @@ export class ProductComponent implements OnInit {
         this.sub.unsubscribe();
     }
 
-    newNode(label: string, data: string, type: string) : TreeNode {
-        return <TreeNode>{
-                'label': label,
-                'data': data,
-                'type': type,
-                'children': []
-        };
-    }
-
     createTree() {
-        let rootNode = this.newNode(this.product.productName, this.product.productCode, 'product');
+        let rootNode = Helpers.newNode(this.product.productName, this.product.productCode, 'product');
         rootNode.expanded = true;
 
-        let producerNode = this.newNode('Brand', '[]', 'brand');
+        let producerNode = Helpers.newNode('Brand', '[]', 'brands');
         producerNode.expanded = true;
-        producerNode.children.push(this.newNode(this.product.brand.brandName, this.product.brand.brandId.toString(), 'brand'));
+        producerNode.children.push(Helpers.newNode(this.product.brand.brandName, this.product.brand.brandId.toString(), 'brand'));
         rootNode.children.push(producerNode);
 
-        let categoriesNode = this.newNode('Categories', '[]', 'category');
+        let categoriesNode = Helpers.newNode('Categories', '[]', 'categories');
         this.product.categories.forEach(elem => {
-            categoriesNode.children.push(this.newNode(elem.category.categoryName, elem.category.categoryId.toString(), 'category'));
+            categoriesNode.children.push(Helpers.newNode(elem.category.categoryName, elem.category.categoryId.toString(), 'category'));
         });
         categoriesNode.expanded = categoriesNode.children.length > 0;
         rootNode.children.push(categoriesNode);
 
-        let attributesNode = this.newNode('Attributes', '[]', 'attribute');
+        let attributesNode = Helpers.newNode('Attributes', '[]', 'attributes');
         attributesNode.expanded = true;
         this.product.attributes.forEach(elem => {
-            let node = this.newNode(elem.attribute.attributeName, elem.attribute.attributeId.toString(), 'attribute');
+            let node = Helpers.newNode(elem.attribute.attributeName, elem.attribute.attributeId.toString(), 'attribute');
             this.product.attributeValues.filter(p => p.attributeValue.attributeId == elem.attribute.attributeId).forEach(e =>
-                node.children.push(this.newNode(e.attributeValue.attributeValueName, e.attributeValue.attributeValueId.toString(), 'attributeValue'))
+                node.children.push(Helpers.newNode(e.attributeValue.attributeValueName, e.attributeValue.attributeValueId.toString(), 'attributeValue'))
             );
             node.expanded = node.children.length > 0;
             attributesNode.children.push(node);
@@ -154,18 +150,47 @@ export class ProductComponent implements OnInit {
         }, err => console.log('Error: ' + err));
     }
 
-    save() {
+    saveClick() {
         this.msgs = [];
         this.msgs.push({severity: 'info', summary: 'Success', detail: 'Data Saved'});
+        this.display = false;
     }
 
-    add() {
-        this.msgs = [];
-        this.msgs.push({severity: 'info', summary: 'Success', detail: 'Data Added'});
-    }
+    addClick() {
+        if (!this.selectedNode) {
+            this.msgs.push({severity: 'info', summary: 'Information', detail: 'A node must be selected before adding'});
+            return;
+        }
 
-    delete() {
-        this.msgs = [];
-        this.msgs.push({severity: 'info', summary: 'Success', detail: 'Data Deleted'});
+        this.list1 = [];
+
+        switch (this.selectedNode.type) {
+            case 'categories':
+                this.categoryService.getAll()
+                    .subscribe(result => {
+                        this.list1 = result.map(p => Helpers.newNode(p.categoryName, p.categoryId.toString(), 'category'));
+                    });
+                this.list2 = this.productInfo[0].children.find(p => p.type == 'categories').children;
+                break;
+            case 'attributes':
+                this.attributeService.getAll()
+                    .subscribe(result => {
+                        this.list1 = result.map(p => Helpers.newNode(p.attributeName, p.attributeId.toString(), 'attribute'));
+                    });
+                this.list2 = this.productInfo[0].children.find(p => p.type == 'attributes').children;
+                break;
+            case 'attribute':
+                this.attributeService.getValueByAttributeId(this.selectedNode.data)
+                    .subscribe(result => {
+                        this.list1 = result.map(p => Helpers.newNode(p.attributeValueName, p.attributeValueId.toString(), 'attributeValue'));
+                    });
+                this.list2 = this.productInfo[0].children.find(p => p.type == 'attributes').children.find(p => p.data == this.selectedNode.data).children;
+                break;
+            default:
+                this.msgs.push({severity: 'info', summary: 'Information', detail: 'You can not add anything to this node'});
+                return;
+        }
+
+        this.display = true;
     }
 }

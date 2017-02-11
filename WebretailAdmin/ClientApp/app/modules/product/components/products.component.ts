@@ -3,14 +3,15 @@ import { Router } from '@angular/router';
 import { Validators, FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { SelectItem, MenuItem } from 'primeng/primeng';
 import { AuthenticationService } from './../../../services/authentication.service';
-import { BrandService } from './../../../services/brand.service';
-import { ProductService } from './../../../services/product.service';
 import { Product, ProductCategory } from './../../../shared/models';
 import { Helpers } from './../../../shared/helpers';
+import { BrandService } from './../../../services/brand.service';
+import { ProductService } from './../../../services/product.service';
 
 @Component({
     selector: 'products',
-    templateUrl: 'products.component.html'
+    templateUrl: 'products.component.html',
+    providers: [BrandService]
 })
 
 export class ProductsComponent implements OnInit {

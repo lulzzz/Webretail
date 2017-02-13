@@ -34,7 +34,7 @@ namespace Webretail.Admin.Repositories
             {
                 Token = CryptHelper.SHA1HashStringForUTF8String(token),
                 Role = item.IsAdmin ? "Admin" : "User",
-                Expiry = DateTime.Now.AddHours(1)
+                Expiry = DateTime.Now.AddHours(4)
             };
 
             memoryCache.Set(
@@ -42,7 +42,7 @@ namespace Webretail.Admin.Repositories
                 tokenModel, 
                 new MemoryCacheEntryOptions
                 {
-                    SlidingExpiration = TimeSpan.FromHours(1)
+                    SlidingExpiration = TimeSpan.FromHours(4)
                 });
 
             return tokenModel;

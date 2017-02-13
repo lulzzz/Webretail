@@ -27,7 +27,13 @@ export class AuthenticationService {
   }
 
   isAuthenticated() : boolean {
-  	return localStorage.getItem('token') !== null;
+    if (localStorage.getItem('token') !== null) {
+      let token = JSON.parse(localStorage.getItem('token'));
+      if (new Date(token.expiry) > new Date()) {
+        return true;
+      }
+    }
+  	return false;
   }
 
   getEmail() : string {

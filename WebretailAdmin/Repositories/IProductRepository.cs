@@ -10,10 +10,24 @@ namespace Webretail.Admin.Repositories
 
         Task<Product> GetByIdAsync(int id);
 
-        Task InsertAsync(Product value);
+        Task InsertAsync(Product model);
 
-        Task UpdateAsync(int id, Product value);
+        Task UpdateAsync(int id, Product model);
 
         Task DeleteAsync(int id);
+
+        Task AddCategoryAsync(ProductCategory model);
+
+        Task RemoveCategoryAsync(ProductCategory model);
+
+        Task AddAttributeAsync(ProductAttribute model);
+
+        Task RemoveAttributeAsync(ProductAttribute model);
+
+        Task AddAttributeValueAsync(ProductAttributeValue model);
+
+        Task RemoveAttributeValueAsync(ProductAttributeValue model);
+
+        Task BuildArticlesByIdAsync(int id);
     }
 }

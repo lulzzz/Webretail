@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Webretail.Admin.Models;
+using System;
 
 namespace Webretail.Admin.Repositories
 {
@@ -144,6 +145,47 @@ namespace Webretail.Admin.Repositories
                 dbContext.Product.Remove(item);
                 await dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
+        }
+
+        public async Task AddCategoryAsync(ProductCategory model)
+        {
+            await dbContext.ProductCategory.AddAsync(model).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public async Task RemoveCategoryAsync(ProductCategory model)
+        {
+            dbContext.ProductCategory.Remove(model);
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public async Task AddAttributeAsync(ProductAttribute model)
+        {
+            await dbContext.ProductAttribute.AddAsync(model).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public async Task RemoveAttributeAsync(ProductAttribute model)
+        {
+            dbContext.ProductAttribute.Remove(model);
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public async Task AddAttributeValueAsync(ProductAttributeValue model)
+        {
+            await dbContext.ProductAttributeValue.AddAsync(model).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public async Task RemoveAttributeValueAsync(ProductAttributeValue model)
+        {
+            dbContext.ProductAttributeValue.Remove(model);
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public Task BuildArticlesByIdAsync(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

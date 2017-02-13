@@ -40,7 +40,7 @@ export class CategoryComponent implements OnInit {
     get selectedIndex(): number { return this.categories.indexOf(this.selected); }
 
     addClick() {
-        this.selected = new Category();
+        this.selected = new Category(0, '');
         this.displayDialog = true;
     }
 

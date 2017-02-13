@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TreeNode, Message, MenuItem } from 'primeng/primeng';
 import { Observable } from 'rxjs/Rx';
 import { AuthenticationService } from './../../../services/authentication.service';
-import { Product, Article, ArticleAttributeValue, AttributeValue } from './../../../shared/models';
+import { Product, ProductCategory, Category, ProductAttribute, Attribute, ProductAttributeValue, Article, ArticleAttributeValue, AttributeValue } from './../../../shared/models';
 import { FooterComponent } from './../../shared/components/footer/footer.component';
 import { Helpers } from './../../../shared/helpers';
 import { ProductService } from './../../../services/product.service';
@@ -28,8 +28,8 @@ export class ProductComponent implements OnInit {
     selected: any;
     productInfo: TreeNode[];
     selectedNode: TreeNode;
-    list1: any[];
-    list2: any[];
+    list1: TreeNode[];
+    list2: TreeNode[];
     display: boolean;
 
 	constructor(private authenticationService: AuthenticationService,
@@ -53,7 +53,7 @@ export class ProductComponent implements OnInit {
 
         this.buttons = [
             {label: 'Build Articles', icon: 'fa-database', command: () => {
-                this.saveClick();
+                this.buildClick();
             }}
         ];
     }
@@ -150,14 +150,9 @@ export class ProductComponent implements OnInit {
         }, err => console.log('Error: ' + err));
     }
 
-    saveClick() {
-        this.msgs.push({severity: 'success', summary: 'Success', detail: 'Data saved'});
-        this.display = false;
-    }
-
-    addClick() {
+    editClick() {
         if (!this.selectedNode) {
-            this.msgs.push({severity: 'warn', summary: 'Warning', detail: 'A node must be selected before adding'});
+            this.msgs.push({severity: 'warn', summary: 'Warning', detail: 'A node must be selected before editing!'});
             return;
         }
 
@@ -165,31 +160,143 @@ export class ProductComponent implements OnInit {
 
         switch (this.selectedNode.type) {
             case 'categories':
+                this.list2 = this.productInfo[0].children.find(p => p.type == 'categories').children;
                 this.categoryService.getAll()
                     .subscribe(result => {
-                        this.list1 = result.map(p => Helpers.newNode(p.categoryName, p.categoryId.toString(), 'category'));
+                        result.forEach(p => {
+                            if (this.list2.findIndex(e => e.data == p.categoryId) < 0) {
+                                this.list1.push(Helpers.newNode(p.categoryName, p.categoryId.toString(), 'category'));
+                            }
+                        });
                     });
-                this.list2 = this.productInfo[0].children.find(p => p.type == 'categories').children;
                 break;
             case 'attributes':
+                this.list2 = this.productInfo[0].children.find(p => p.type == 'attributes').children;
                 this.attributeService.getAll()
                     .subscribe(result => {
-                        this.list1 = result.map(p => Helpers.newNode(p.attributeName, p.attributeId.toString(), 'attribute'));
+                        result.forEach(p => {
+                            if (this.list2.findIndex(e => e.data == p.attributeId) < 0) {
+                                this.list1.push(Helpers.newNode(p.attributeName, p.attributeId.toString(), 'attribute'));
+                            }
+                        });
                     });
-                this.list2 = this.productInfo[0].children.find(p => p.type == 'attributes').children;
                 break;
             case 'attribute':
+                this.list2 = this.productInfo[0].children.find(p => p.type == 'attributes')
+                                                .children.find(p => p.data == this.selectedNode.data)
+                                                .children;
                 this.attributeService.getValueByAttributeId(this.selectedNode.data)
                     .subscribe(result => {
-                        this.list1 = result.map(p => Helpers.newNode(p.attributeValueName, p.attributeValueId.toString(), 'attributeValue'));
+                        result.forEach(p => {
+                            if (this.list2.findIndex(e => e.data == p.attributeValueId) < 0) {
+                                this.list1.push(Helpers.newNode(p.attributeValueName, p.attributeValueId.toString(), 'attributeValue'));
+                            }
+                        });
                     });
-                this.list2 = this.productInfo[0].children.find(p => p.type == 'attributes').children.find(p => p.data == this.selectedNode.data).children;
                 break;
             default:
-                this.msgs.push({severity: 'warn', summary: 'warning', detail: 'You can not add anything to this node'});
+                this.msgs.push({severity: 'warn', summary: 'warning', detail: 'You can not update anything to this node!'});
                 return;
         }
 
         this.display = true;
+    }
+
+    addNodes(event: any) {
+        let nodes: TreeNode[] = event.items;
+        nodes.forEach(p => {
+            switch (p.type) {
+                case 'category':
+                    let productCategory = <ProductCategory>{
+                        productId: this.product.productId,
+                        category: new Category(p.data, p.label)
+                    };
+                    this.productService
+                        .addCategory(productCategory)
+                        .subscribe(result => this.msgs.push({
+                                severity: 'success',
+                                summary: 'Success',
+                                detail: 'Added category ' + p.label
+                            }));
+                    break;
+                case 'attribute':
+                    let productAttribute = <ProductAttribute>{
+                        productId: this.product.productId,
+                        attribute: new Attribute(p.data, p.label, new Date())
+                    };
+                    this.productService
+                        .addAttribute(productAttribute)
+                        .subscribe(result => this.msgs.push({
+                                severity: 'success',
+                                summary: 'Success',
+                                detail: 'Added attribute ' + p.label
+                            }));
+                    break;
+                case 'attributeValue':
+                    let productAttributeValue = <ProductAttributeValue>{
+                        productId: this.product.productId,
+                        attributeValue: new AttributeValue(this.selectedNode.data, p.data, p.data, p.label, new Date())
+                    };
+                    this.productService
+                        .addAttributeValue(productAttributeValue)
+                        .subscribe(result => this.msgs.push({
+                                severity: 'success',
+                                summary: 'Success',
+                                detail: 'Added attribute value ' + p.label
+                            }));
+                    break;
+            }
+        });
+    }
+
+    removeNodes(event: any) {
+        let nodes: TreeNode[] = event.items;
+        nodes.forEach(p => {
+            switch (p.type) {
+                case 'category':
+                    let productCategory = <ProductCategory>{
+                        productId: this.product.productId,
+                        category: new Category(p.data, p.label)
+                    };
+                    this.productService
+                        .removeCategory(productCategory)
+                        .subscribe(result => this.msgs.push({
+                                severity: 'success',
+                                summary: 'Success',
+                                detail: 'Removed category ' + p.label
+                            }));
+                    break;
+                case 'attribute':
+                    let productAttribute = <ProductAttribute>{
+                        productId: this.product.productId,
+                        attribute: new Attribute(p.data, p.label, new Date())
+                    };
+                    this.productService
+                        .removeAttribute(productAttribute)
+                        .subscribe(result => this.msgs.push({
+                                severity: 'success',
+                                summary: 'Success',
+                                detail: 'Removed attribute ' + p.label
+                            }));
+                    break;
+                case 'attributeValue':
+                    let productAttributeValue = <ProductAttributeValue>{
+                        productId: this.product.productId,
+                        attributeValue: new AttributeValue(this.selectedNode.data, p.data, p.data, p.label, new Date())
+                    };
+                    this.productService
+                        .removeAttributeValue(productAttributeValue)
+                        .subscribe(result => this.msgs.push({
+                                severity: 'success',
+                                summary: 'Success',
+                                detail: 'Removed attribute value ' + p.label
+                            }));
+                    break;
+            }
+        });
+    }
+
+    buildClick() {
+        this.msgs.push({severity: 'success', summary: 'Success', detail: 'Data builded'});
     }
 }

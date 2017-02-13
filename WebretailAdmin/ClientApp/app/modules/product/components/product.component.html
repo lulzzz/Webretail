@@ -3,7 +3,7 @@
 <div class="container-fluid">
     <h2>Product</h2>
     <div class="global-search">
-        <p-splitButton label="Add" icon="fa-check" (onClick)="addClick()" [model]="buttons"></p-splitButton>
+        <p-splitButton label="Edit" icon="fa-check" (onClick)="editClick()" [model]="buttons"></p-splitButton>
     </div>
     <p>Code: {{product?.productCode}}</p>
     <hr />
@@ -29,13 +29,14 @@
     </table>
 </div>
 
-<p-dialog header="Selection" [modal]=true showEffect="fade" [(visible)]="display">
-    <p-pickList [source]="list1" [target]="list2" [responsive]="true">
+<p-dialog header="Edit node" [modal]=true showEffect="fade" [(visible)]="display">
+    <p-pickList [source]="list1" [target]="list2" [responsive]="true" 
+    (onMoveToTarget)="addNodes($event)" (onMoveToSource)="removeNodes($event)">
         <template let-attr pTemplate="item">
             <span>{{attr.data}}</span> | <span>{{attr.label}}</span>
         </template>
     </p-pickList>
-    <p-footer>
+    <!--<p-footer>
         <button type="button" pButton style="width: 94%;padding: 5px;margin: 3%;" icon="fa-save" (click)="saveClick()" label="Save"></button>
-    </p-footer>
+    </p-footer>-->
 </p-dialog>

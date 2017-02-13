@@ -78,5 +78,83 @@ namespace Webretail.Admin.Controllers
 
             return new StatusCodeResult(204);
         }
+
+        // POST api/product/category
+        [HttpPost("category")]
+        public async Task<IActionResult> AddCategory([FromBody]ProductCategory model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new StatusCodeResult(400);
+            }
+
+            await repository.AddCategoryAsync(model).ConfigureAwait(false);
+
+            return Created("category", model);
+        }
+
+        // PUT api/product/category
+        [HttpPut("category")]
+        public async Task<IActionResult> RemoveCategory([FromBody]ProductCategory model)
+        {
+            await repository.RemoveCategoryAsync(model).ConfigureAwait(false);
+
+            return new StatusCodeResult(204);
+        }
+
+        // POST api/product/attribute
+        [HttpPost("attribute")]
+        public async Task<IActionResult> AddAttribute([FromBody]ProductAttribute model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new StatusCodeResult(400);
+            }
+
+            await repository.AddAttributeAsync(model).ConfigureAwait(false);
+
+            return Created("attribute", model);
+        }
+
+        // PUT api/product/attribute
+        [HttpPut("attribute")]
+        public async Task<IActionResult> RemoveAttribute([FromBody]ProductAttribute model)
+        {
+            await repository.RemoveAttributeAsync(model).ConfigureAwait(false);
+
+            return new StatusCodeResult(204);
+        }
+
+        // POST api/product/attributevalue
+        [HttpPost("attributevalue")]
+        public async Task<IActionResult> AddAttributeValue([FromBody]ProductAttributeValue model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new StatusCodeResult(400);
+            }
+
+            await repository.AddAttributeValueAsync(model).ConfigureAwait(false);
+
+            return Created("attributevalue", model);
+        }
+
+        // PUT api/product/attributevalue
+        [HttpPut("attributevalue")]
+        public async Task<IActionResult> RemoveAttributeValue([FromBody]ProductAttributeValue model)
+        {
+            await repository.RemoveAttributeValueAsync(model).ConfigureAwait(false);
+
+            return new StatusCodeResult(204);
+        }
+
+        // GET api/product/5/build
+        [HttpGet("{id}/build")]
+        public async Task<IActionResult> BuildArticlesById(int id)
+        {
+            await repository.BuildArticlesByIdAsync(id).ConfigureAwait(false);
+
+            return Ok();
+        }
     }
 }

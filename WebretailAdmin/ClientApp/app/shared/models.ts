@@ -43,9 +43,9 @@ export class Category {
   public isPrimary: boolean;
   public updated: Date;
 
-  constructor() {
-    this.categoryId = 0;
-    this.categoryName = '';
+  constructor(categoryId: number, categoryName: string) {
+    this.categoryId = categoryId;
+    this.categoryName = categoryName;
     this.isPrimary = false;
     this.updated = new Date();
   }
@@ -117,21 +117,25 @@ export class AttributeValue {
 export interface Token {
     token: string;
     role: number;
-    Expiry: Date;
+    expiry: Date;
 }
 
 export interface ProductCategory {
-   category: Category;
+  productId: number;
+  category: Category;
 }
 
 export interface ProductAttribute {
-   attribute: Attribute;
+  productId: number;
+  attribute: Attribute;
 }
 
 export interface ProductAttributeValue {
-   attributeValue: AttributeValue;
+  productId: number;
+  attributeValue: AttributeValue;
 }
 
 export interface ArticleAttributeValue {
-   attributeValue: AttributeValue;
+  articleId: number;
+  attributeValue: AttributeValue;
 }

@@ -9,7 +9,7 @@ namespace Webretail.Admin.Models
     {
 		[Required]
 		[Column("product_id")]
-		[JsonIgnore]
+		[JsonProperty("productId")]
 		public int ProductId { get; set; }
 
 		[JsonIgnore]
